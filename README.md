@@ -82,3 +82,48 @@ http://your_server_ip/zabbix
 Admin
 zabbix
 ```
+
+### Step 8 - Install & Enable Zabbix Java Gateway
+```bash
+ apt-get install zabbix-java-gateway  
+ /etc/init.d/zabbix-java-gateway start
+```
+### zabbix-java-gateway service
+```bash
+systemctl enable zabbix-java-gateway
+systemctl start  zabbix-java-gateway
+systemctl status  zabbix-java-gateway
+```
+### zabbix-java-gateway configuration
+```bash
+ vi /etc/zabbix/zabbix_server.conf
+```bash
+JavaGateway=IP address (or hostname) of Zabbix Java gateway.
+JavaGatewayPort=10052
+StartJavaPollers=5
+```
+### tomcat -9 servr configuration
+```bash
+
+#t9 environment variable
+[Unit]
+Description=Tomcat 9 servlet container
+After=network.target
+
+[Service]
+Type=forking
+
+User=tomcat
+Group=tomcat
+
+Environment="JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64"
+Environment="CATALINA_BASE=/usr/share/apache-tomcat-9.0.30"
+Environment="CATALINA_OPTS=-Xms512M -Xmx512M -server -XX:+UseParallelGC"
+Environment="JAVA_OPTS=-Djava.awt.headless=true -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=12345 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=192.168.100.1"
+
+ExecStart=/usr/share/apache-tomcat-9.0.30/bin/startup.sh
+ExecStop=/usr/share/apache-tomcat-9.0.30/bin/shutdown.sh
+
+[Install]
+
+```
